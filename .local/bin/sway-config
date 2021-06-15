@@ -1,0 +1,93 @@
+#! /usr/bin/env rust-script
+
+//! ```cargo
+//! [dependencies]
+//! clap = "3.0.0-beta.2"
+//! ```
+
+#![allow(warnings, unused)]
+
+extern crate clap;
+
+use std::{
+    path::{
+        Path,
+        PathBuf
+    },
+    fs,
+    os::unix::fs::symlink
+};
+
+use clap::{
+    Clap
+};
+
+#[derive(Clap)]
+#[clap(version = "1.0.0", about = "Tool for loading and unloading sway configs")]
+struct RunArgs {
+    #[clap(subcommand)]
+    subcmd: SubCommand
+}
+
+#[derive(Clap)]
+enum SubCommand {
+    #[clap(about = "loads a config")]
+    Load(LoadArgs),
+    #[clap(about = "unloads a config")]
+    Unload(UnloadArgs)
+}
+
+#[derive(Clap)]
+struct LoadArgs {
+    #[clap(index = 1, required = true)]
+    pub name: String
+}
+
+#[derive(Clap)]
+struct UnloadArgs {
+    #[clap(index = 1, required = true)]
+    pub name: String
+}
+
+fn main() {
+    let run_args = RunArgs::parse();
+
+    match run_args.subcmd {
+        SubCommand::Load(args) => subcmd_load(args),
+        SubCommand::Unload(args) => subcmd_unload(args)
+    };
+}
+
+fn subcmd_load(args: LoadArgs) {
+    let sway_config_dir = PathBuf::from("/home/delbato/.config/sway");
+    std::env::set_current_dir(&sway_config_dir).unwrap();
+
+    if Path::new(&format!("config.d/{}", args.name)).exists() {
+        eprintln!("{} config is already loaded.", args.name);
+        return;
+    }
+
+    let config_d_dir = sway_config_dir.join("config.d");
+    std::env::set_current_dir(&config_d_dir).unwrap();
+
+    let raw = format!("../off-config.d/{}", args.name);
+    let unloaded_config_path = Path::new(&raw);
+    let loaded_config_path = Path::new(&args.name);
+
+    symlink(&unloaded_config_path, &loaded_config_path).unwrap();
+    println!("{} config has been loaded.", args.name);
+}
+
+fn subcmd_unload(args: UnloadArgs) {
+    let sway_config_dir = PathBuf::from("/home/delbato/.config/sway");
+    std::env::set_current_dir(&sway_config_dir).unwrap();
+
+    if !Path::new(&format!("config.d/{}", args.name)).exists() {
+        eprintln!("{} config is not loaded.", args.name);
+        return;
+    }
+
+    fs::remove_file(&format!("config.d/{}", args.name)).unwrap();
+
+    println!("{} config has been unloaded.", args.name);
+}
