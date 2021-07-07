@@ -30,10 +30,18 @@ zinit snippet OMZ::lib/history.zsh
 zinit ice wait"0" silent pick"history.plugin.zsh" lucid
 zinit snippet OMZ::plugins/history/history.plugin.zsh
 # search history via substring
-zinit light zsh-users/zsh-history-substring-search 
+#zinit light zsh-users/zsh-history-substring-search 
 # search through long list of commands with Ctrl+R
-zinit ice from"gh" wait"1" silent pick"history-search-multi-word.plugin.zsh" lucid
-zinit light zdharma/history-search-multi-word
+#zinit ice from"gh" wait"1" silent pick"history-search-multi-word.plugin.zsh" lucid
+#zinit light zdharma/history-search-multi-word
+
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search # Up
+bindkey "^[[B" down-line-or-beginning-search # Down
+
 
 # autosuggestions
 zinit ice wait"0" atload"_zsh_autosuggest_start" lucid

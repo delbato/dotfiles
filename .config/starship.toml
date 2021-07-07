@@ -6,6 +6,7 @@ disabled = false
 [username]
 disabled = false
 show_always = true
+format = "[$user]($style) on "
 
 [git_status]
 disabled=true
@@ -18,6 +19,7 @@ disabled = true
 
 [hostname]
 ssh_only = false
+style = "bold dimmed blue"
 
 [docker_context]
 disabled = true
