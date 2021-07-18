@@ -19,7 +19,7 @@ set $term alacritty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu bemenu-run -H 32 -m -1 | xargs swaymsg exec --
+set $menu bemenu-run -H 28 -m -1 | xargs swaymsg exec --
 
 ### Output configuration
 #
@@ -196,7 +196,7 @@ bindsym $mod+r mode "resize"
 
 # Gaps:
 gaps inner 16
-gaps outer -12
+gaps outer -8
 smart_gaps on
 
 # Border:
@@ -213,6 +213,8 @@ bindsym $mod+$alt+l exec swaylock-custom
 # XDG Desktop portal settings
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
+# pavucontrol fix
+for_window [app_id="pavucontrol"] floating enable, sticky enable, move position cursor, move down 35
 #
 # Status Bar:
 #
